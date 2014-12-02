@@ -1,0 +1,461 @@
+todo list:
+
+1. bugs reported during instrumentation:
+web.qq.com
+linux javascript
+
+
+2. for some webpages there are some 'hidden script tags'
+not very sure where did they come from
+
+3. current approach:l
+load webpage -> extract js->instrument js->insert back into webpage
+seems does not work
+
+proposed approach:
+before loading page, as soon as get the whole webpage source:
+	extract js(prefetch external js) -> instrument js -> insert back into web page source code
+for those external js, as soon as the loading process request those javascript files, we intercept those requests and return those instrumented source code
+
+some resources about intercepting page loads:
+https://developer.mozilla.org/en-US/docs/XUL/School_tutorial/Intercepting_Page_Loads
+http://www.webdeveloper.com/forum/showthread.php?247806-Firefox-Extension-Intercepting-and-Redirecting-Certain-HTTP-Requests
+http://webmynd.wordpress.com/2011/04/04/equivalent-to-beforeload-event-for-firefox-extensions/
+
+
+-----------------------------
+tips on how to open the 8080 trace recording server:
+
+python scripts/jalangi.py server &
+
+
+killall node
+python scripts/jalangi.py rrserver http://127.0.0.1:8000/tests/tizen/annex/index_jalangi_.html
+
+to do list: extract the code that starts the 8080 server only
+
+
+-----------------------------
+to do list: getting a more complex user interface
+
+
+
+-----------------------------
+Other long term problems:
+
+the instrumented application is a little bit slow
+the trace is so large
+when replay it seems that there is something wrong in the execution (you need to terminate the trace recording server and wait for like 2 minutes)
+
+
+some resources:
+
+Firefox addon sdk official website:
+https://addons.mozilla.org/en-US/developers/docs/sdk/latest/modules/sdk/request.html
+
+Community developed modules for firefox addon
+https://github.com/mozilla/addon-sdk/wiki/Community-developed-modules
+
+Jalangi Github page:
+https://github.com/SRA-SiliconValley/jalangi
+
+
+
+---------------------------------------------------
+
+parallel code instrumentation
+
+in real scenario
+try{
+	f() 
+}catch(e){}
+and f might be undefined or null
+same for f['a'] array[1] and x.a
+
+
+---------------------------------------------------
+
+as mozilla engineer if loading too long(caused by instrumentation) would be a problem for execution js
+as koushik window.Jalangi_mode = 'record'?
+
+
+---------------------------------------------------
+
+
+http://www.lutanho.net/play/laby.html
+
+http://127.0.0.1:8081/test-driven-javascript-development-code/09-unobtrusive-javascript/obtrusive/tabs.html
+
+
+two games that seems works
+http://www.lutanho.net/play/tetris.html  (works for RR)         =========================================================================================================================
+http://www.inmensia.com/files/minesweeper1.0.html
+http://www.craigprince.com/games/the_journey/
+http://adamzap.com/random/landslide.html#slide4
+
+webpages that partially works:
+http://www.alexbuga.is/
+http://www.alexbuga.is/post/62053105984/liftware-spoon
+http://www.codecademy.com/
+
+test set:
+http://jqueryui.com/draggable/
+
+online rich text editor
+http://www.tinymce.com/tryit/full.php
+
+cc
+http://www.adityaravishankar.com/projects/games/command-and-conquer/
+
+
+http://www.codecademy.com/
+http://taitems.github.io/Aristo-jQuery-UI-Theme/ (doesnot work for RR) 
+http://gumbyframework.com/docs/javascript/#!/touch-support
+http://ushiroad.com/jsviz/  (use worker) (works for RR) 
+http://mobileawesomeness.com/?ref=tap
+http://www.kendoui.com/
+http://bartaz.github.io/impress.js/#/overview
+
+(after disabling recordReplayEngine, it works)
+http://dev.sencha.com/deploy/ext-4.0.0/examples/desktop/desktop.html
+http://bellard.org/jslinux/  (takes too long not sure if it works or not)
+
+http://www.digitalattackmap.com/#anim=1&color=0&country=ALL&time=16003&view=map
+http://map.honeynet.org/
+
+http://demos.dojotoolkit.org/demos/themePreviewer/demo.html
+
+partially working
+http://demos.dojotoolkit.org/demos/mobileCharting/demo.html
+http://www.anchormodeling.com/modeler/latest/?page_id=112
+
+(silent bug)
+
+demo candidate:
+
+hackDemo.js + 
+http://www.digitalattackmap.com/#anim=1&color=0&country=ALL&time=15860.6&view=map
+
+http://ushiroad.com/jsviz/
+http://www.kendoui.com/
+http://taitems.github.io/Aristo-jQuery-UI-Theme/
+http://esprima.org/demo/parse.html
+http://www.jshint.com/
+
+
+more test cases:
+http://101bestwebsites.com/category/javascript/
+
+(this is exciting)
+http://demos.kendoui.com/web/grid/virtualization-remote-data.html
+
+(funny)
+http://esprima.org/demo/parse.html 
+(funny)
+http://www.jshint.com/
+
+
+webpage that does not work now:
+(serious)
+https://www.inkling.com/read/javascript-definitive-guide-david-flanagan-6th/client-side-javascript-reference/workerglobalscope
+http://dev.sencha.com/deploy/ext-4.0.0/examples/desktop/desktop.html
+
+
+www.facebook.com
+
+fascinating dot graph js website:
+http://ushiroad.com/jsviz/
+
+
+small examples that doesn't work:
+http://www.nihilogic.dk/labs/mario/mario_small_nomusic.htm
+
+one case that J$FF cannot handle:
+addlistener ? or may be can, because any function passed to add listener must be instrumented first
+
+another case that J$FF cannot handle:
+<!-- what? frames? yes. frames. required to keep all demo's working after adding a top menu to them -->
+	<frameset onload="document.getElementsByTagName('frame')[1].contentWindow.focus();" rows="30px,*">
+		<!-- the inline html src allows me to make this page a single resource :) sure js is required, but come on, dont forget why you're here! -->
+		<frame marginwidth="0" marginheight="0" frameborder="0" noresize="no" src="javascript:'&lt;!doctype html&gt;\n&lt;html&gt;\n\t&lt;head&gt;\n\t\t&lt;meta charset=&quot;utf-8&quot; /&gt;\n\t\t&lt;style&gt;\n\t\t\thtml, body { width: 100%25; height: 100%25; margin: 0; padding: 0; border: 0; }\n\t\t\tdiv { margin: 0; padding: 0; border: 0; }\n\t\t\t.nav { \n\t\t\t\tposition: absolute; \n\t\t\t\ttop: 0; \n\t\t\t\tleft: 0; \n\t\t\t\twidth: 100%25; \n\t\t\t\theight: 27px; \n\t\t\t\tbackground-color: white; \n\t\t\t\tcolor: black; \n\t\t\t\ttext-align: center; \n\t\t\t\tline-height: 25px;\n\t\t\t}\n\n\t\t\ta { color: black; text-decoration: none; border-bottom: 1px dashed black; }\n\t\t\ta:hover { border-bottom: 1px solid red; }\n\n\t\t\t.previous { float: left; margin-left: 10px; }\n\t\t\t.next { float: right; margin-right: 10px; }\n\t\t\t\n\t\t\t.green { color: green; }\n\t\t\t.red { color: red; }\n\n\t\t\ttextarea { width: 100%25; height: 100%25; border: 0; padding: 0; margin: 0; padding-bottom: 20px; }\n\t\t\t.block-outer { float: left; width: 22%25; height: 100%25; padding: 5px; border-left: 1px solid black; margin: 30px 3px 3px 3px; }\n\t\t\t.block-inner { height: 68%25; }\n\t\t\t.one { border: 0; }\n\t\t&lt;/style&gt;\n\t&lt;/head&gt;\n\t&lt;body&gt;\n\t\t&lt;div class=&quot;nav&quot;&gt;\n\t\t\t&lt;span class=&quot;previous&quot;&gt;&lt;a href=&quot;../demo/1281&quot; target=&quot;_top&quot;&gt;Previous&lt;/a&gt;&lt;/span&gt; \n\t\t\t\n\t\t\t&lt;a href=&quot;/&quot; target=&quot;_top&quot;&gt;%23js1k&lt;/a&gt; \n\t\t\tdemo submission\n\t\t\tby &lt;a href=&quot;http://twitter.com/ehouais&quot; target=&quot;_blank&quot;&gt;@ehouais&lt;/a&gt;, \n\t\t\t1022 bytes \n\t\t\t- &lt;a href=&quot;javascript:toggle();&quot;&gt;view source and description (dropdown)&lt;/a&gt;\n\t\t\t- back to &lt;a href=&quot;../demos&quot; target=&quot;_top&quot;&gt;list of demos&lt;/a&gt;\n\t\t\t &lt;span class=&quot;next&quot;&gt;&lt;a href=&quot;../demo/1283&quot; target=&quot;_top&quot;&gt;Next&lt;/a&gt;&lt;/span&gt;\n\t\t&lt;/div&gt;\n\t\t&lt;div class=&quot;block-outer one&quot;&gt;\n\t\t\t&lt;b&gt;Title:&lt;/b&gt; Mine[love]craft&lt;br/&gt;\n\t\t\t&lt;b&gt;By:&lt;/b&gt; Philippe Deschaseaux&lt;br /&gt;\n\t\t\t\t&lt;b&gt;Twitter:&lt;/b&gt; @&lt;a href=&quot;http://twitter.com/ehouais&quot; target=&quot;_blank&quot;&gt;ehouais&lt;/a&gt;&lt;br /&gt;\n\n\t\t\t&lt;b&gt;Bytes:&lt;/b&gt; 1022&lt;br /&gt;\n\t\t\t&lt;b&gt;Chars:&lt;/b&gt; 1022&lt;br /&gt;\n\t\t&lt;/div&gt;\n\t\t&lt;div class=&quot;block-outer&quot;&gt;\n\t\t\t&lt;b&gt;Source:&lt;/b&gt;\n\t\t\t&lt;div class=&quot;block-inner&quot;&gt;\n\t\t\t\t&lt;textarea&gt;_=&amp;quot;Z=[@c.width=c.heighA2*(H=300\u000bNB49;P=\u0005w*=\u0008;x=HEi-jF\u0008;y=H*3\u001aE\u0016-k-kF\u0008\u001a;\u001eStyle=\'hsl(\'+t*20+\',\'+99*!r+\'%25,\'+\u000c99*\u0003pow(u/1\u00131/C\u001b+\'%25)\';VbeginPath(\u000bVmovQ+\u0018\u0004,y+w\u001a\u0004-\u0018\u0004-\u0018-=h*\u0008\u0004,y-w\u001a\u0004+\u0018\u000b\u001e(G;D=74\u0006(\u001f=\u001f||[])[i+D]=[-9,C=IB@DB7;\u0015T=J=m=0;m\u001c&amp;lt;6e2;){X\u0012)\u000bY\u0012\u0001K+=5*\u000eG}setInterval(\u0005s= \u000bW^_0;P%23,4*D`\u00139\u000bA(s&amp;gt;0%3FD:-D\u000bq=WJ\u0017\u000br=^-I\u0017+B/N\u000b\u0016&amp;lt;0\u001d(_s*t*3.2,P(2,2,3,9.9`\u0001CB\u001a0EK&amp;lt;0\u001d25*\u0019RF(R\u001b)EA\u000e*2\u001bEs&amp;gt;0Fs*(2-sF(1-t\u000b(z=\u000c\u0014A_0]\u001b&amp;gt;0\u001d\tz,\u00131\u000bz&amp;lt;0%3F\t(1.4+ *25+\u0007\u001b/6,9-z/3,5):(_z)%3F\t\u00136,3):\t\u00133,6\u000b\u0015;u=\u0014t+2@L=\u001ct){k+=u-1;\t1,\u00134`\u000bk\u001c;$Gk&amp;gt;15\u001d$\u000bi||j||\t0.3,\u00135G},99\u000bonkeydown=\u0005D+=\u000f4O3\u000bW\u000f9O7\u000b^(\u0002==40O8\u000bp=Z[X=\u0010Y=\u0007@17\u0011(AI,I=-J,J=t\u000b32\u0011p.push(1\u000b66\u0011L\u001d\u00141+L]\u001c;67\u0011(\u00142]%3Fp.pop():K--G\u0001\u001b\u0006{p=Z[\u0010\u0007@\u0002w.keyCode\u0003Math.\u0004\u000bVlinQ\u0005function(w,h,t,u,r){\u0006;\u0015^-D;j&amp;lt;=D;j\u001c)\u0015W-D;i&amp;lt;=D;i\u001c)\u0007(Y-i*I-j*JU\u0008H/%23)\tP(1,\u000b);\u000c\u0003floor(\u000e\u0019i*\u0016*j)\u001a5\u000f(\u0002==3\u0010(X+i*J-j*IU][\u0011==\u0002\u001d\u0012=\u000cN*\u0003random(\u00130,\u0014p[\u0015for(\u0016i+j\u0017*t*\u0003cos(T\u0018w,y\u0019\u0003exp(-(\u001a/2\u001b))\u001c++\u001d&amp;amp;&amp;amp;\u001eVfill\u001fZ[j+D] \u0003sin(T%23(2*D+1$\t\u0013\u00139`@];At=B=1E+(F)*G)}K\u00140]L\u00141]O)-\u000fQeTo(xRq-r-\u0016U+N)%25NVa.Wi=^j=_k=`,1&amp;quot;;for(Y=0;$=&amp;quot;`_^WVURQOLKGFEBA@$%23 \u001f\u001e\u001d\u001c\u001b\u001a\u0019\u0018\u0017\u0016\u0015\u0014\u0013\u0012\u0011\u0010\u000f\u000e\u000c\u000b\t\u0008\u0007\u0006\u0005\u0004\u0003\u0002\u0001&amp;quot;[Y++];)Z=_.split($),_=Z.join(Z.pop());eval(_)&lt;/textarea&gt;\n\t\t\t&lt;/div&gt;\n\t\t&lt;/div&gt;\n\t&lt;div class=&quot;block-outer&quot;&gt;\n\t\t&lt;b&gt;Description:&lt;/b&gt;\n\t\t&lt;div class=&quot;block-inner&quot;&gt;\n\t\t\t&lt;textarea&gt;Simplistic Minecraft-inspired sandboxing block game (v2) with:\r\n* &amp;quot;Infinite&amp;quot; map (150 units wide &amp;amp; cycling)\r\n* Terrain generator &amp;amp; renderer, with snowy mountains, grassy slopes, deep/shallow waters, sandy beaches, waves\r\n* Dynamic lighting with day/night alternance, sun/moon rising in the east, setting in the west, and reflecting in water\r\n* Map exploration: move/rotate/zoom\r\n* Map edition: soil digging, stone buildings\r\n\r\nCommands:\r\n* Arrows: move around the map\r\n* Page Up/Page Down: zoom/dezoom\r\n* Ctrl: rotate view (+90\u00b0)\r\n* Space: add stone block\r\n* C: remove block\r\n* B: lift block (to create complex buildings)&lt;/textarea&gt;\n\t\t&lt;/div&gt;\n\t&lt;/div&gt;\n\n\n\t\t&lt;script&gt;\n\t\t\tvar collapsed = true;\n\t\t\tfunction toggle() {\n\t\t\t\tvar fs = top.document.getElementsByTagName(\'frameset\')[0];\n\t\t\t\tvar f = fs.getElementsByTagName(\'frame\');\n\t\t\t\tif (collapsed) {\n\t\t\t\t\tfs.rows = \'250px,*\';\n\t\t\t\t\t// enable resizing of frames in firefox/opera\n\t\t\t\t\tfs.noResize = false;\n\t\t\t\t\tf[0].noResize = false;\n\t\t\t\t\tf[1].noResize = false;\n\t\t\t\t} else {\n\t\t\t\t\tfs.rows = \'30px,*\';\n\t\t\t\t\t// disable resizing of frames in firefox/opera\n\t\t\t\t\tfs.noResize = true;\n\t\t\t\t\tf[0].noResize = true;\n\t\t\t\t\tf[1].noResize = true;\n\t\t\t\t}\n\t\t\t\tcollapsed = !collapsed;\n\t\t\t}\n\t\t&lt;/script&gt;\n\t&lt;/body&gt;\n&lt;/html&gt;\n'" />
+		<frame marginwidth="0" marginheight="0" frameborder="0" noresize="no" src="javascript:'&lt;!doctype html&gt;\n&lt;html&gt;\n\t&lt;head&gt;\n\t\t&lt;title&gt;JS1k, 1k demo submission [1282]&lt;/title&gt;\n\t\t&lt;meta charset=&quot;utf-8&quot; /&gt;\n\t&lt;/head&gt;\n\t&lt;body&gt;\n\t\t&lt;canvas id=&quot;c&quot;&gt;&lt;/canvas&gt;\n\t\t&lt;script&gt;\n\t\t\tvar b = document.body;\n\t\t\tvar c = document.getElementsByTagName(\'canvas\')[0];\n\t\t\tvar a = c.getContext(\'2d\');\n\t\t\tdocument.body.clientWidth; // fix bug in webkit: http://qfox.nl/weblog/218\n\t\t&lt;/script&gt;\n\t\t&lt;script&gt;\n// start of submission //\n_=&quot;Z=[@c.width=c.heighA2*(H=300\u000bNB49;P=\u0005w*=\u0008;x=HEi-jF\u0008;y=H*3\u001aE\u0016-k-kF\u0008\u001a;\u001eStyle=\'hsl(\'+t*20+\',\'+99*!r+\'%25,\'+\u000c99*\u0003pow(u/1\u00131/C\u001b+\'%25)\';VbeginPath(\u000bVmovQ+\u0018\u0004,y+w\u001a\u0004-\u0018\u0004-\u0018-=h*\u0008\u0004,y-w\u001a\u0004+\u0018\u000b\u001e(G;D=74\u0006(\u001f=\u001f||[])[i+D]=[-9,C=IB@DB7;\u0015T=J=m=0;m\u001c&lt;6e2;){X\u0012)\u000bY\u0012\u0001K+=5*\u000eG}setInterval(\u0005s= \u000bW^_0;P%23,4*D`\u00139\u000bA(s&gt;0%3FD:-D\u000bq=WJ\u0017\u000br=^-I\u0017+B/N\u000b\u0016&lt;0\u001d(_s*t*3.2,P(2,2,3,9.9`\u0001CB\u001a0EK&lt;0\u001d25*\u0019RF(R\u001b)EA\u000e*2\u001bEs&gt;0Fs*(2-sF(1-t\u000b(z=\u000c\u0014A_0]\u001b&gt;0\u001d\tz,\u00131\u000bz&lt;0%3F\t(1.4+ *25+\u0007\u001b/6,9-z/3,5):(_z)%3F\t\u00136,3):\t\u00133,6\u000b\u0015;u=\u0014t+2@L=\u001ct){k+=u-1;\t1,\u00134`\u000bk\u001c;$Gk&gt;15\u001d$\u000bi||j||\t0.3,\u00135G},99\u000bonkeydown=\u0005D+=\u000f4O3\u000bW\u000f9O7\u000b^(\u0002==40O8\u000bp=Z[X=\u0010Y=\u0007@17\u0011(AI,I=-J,J=t\u000b32\u0011p.push(1\u000b66\u0011L\u001d\u00141+L]\u001c;67\u0011(\u00142]%3Fp.pop():K--G\u0001\u001b\u0006{p=Z[\u0010\u0007@\u0002w.keyCode\u0003Math.\u0004\u000bVlinQ\u0005function(w,h,t,u,r){\u0006;\u0015^-D;j&lt;=D;j\u001c)\u0015W-D;i&lt;=D;i\u001c)\u0007(Y-i*I-j*JU\u0008H/%23)\tP(1,\u000b);\u000c\u0003floor(\u000e\u0019i*\u0016*j)\u001a5\u000f(\u0002==3\u0010(X+i*J-j*IU][\u0011==\u0002\u001d\u0012=\u000cN*\u0003random(\u00130,\u0014p[\u0015for(\u0016i+j\u0017*t*\u0003cos(T\u0018w,y\u0019\u0003exp(-(\u001a/2\u001b))\u001c++\u001d&amp;&amp;\u001eVfill\u001fZ[j+D] \u0003sin(T%23(2*D+1$\t\u0013\u00139`@];At=B=1E+(F)*G)}K\u00140]L\u00141]O)-\u000fQeTo(xRq-r-\u0016U+N)%25NVa.Wi=^j=_k=`,1&quot;;for(Y=0;$=&quot;`_^WVURQOLKGFEBA@$%23 \u001f\u001e\u001d\u001c\u001b\u001a\u0019\u0018\u0017\u0016\u0015\u0014\u0013\u0012\u0011\u0010\u000f\u000e\u000c\u000b\t\u0008\u0007\u0006\u0005\u0004\u0003\u0002\u0001&quot;[Y++];)Z=_.split($),_=Z.join(Z.pop());eval(_)\n// end of submission //\n\t\t&lt;/script&gt;\n\t&lt;/body&gt;\n&lt;/html&gt;'" />
+	</frameset>
+
+
+---------------------------------------------------
+
+cross browser issues:
+http://quirksmode.org/dom/core/
+http://blog.iftekharul.com/2009/10/23/common-cross-browser-javascript-issues/
+http://blog.stevenlevithan.com/category/cross-browser
+cross browser issues[events]:
+http://help.dottoro.com/larrqqck.php
+
+
+---------------------------------------------------
+
+a bottleneck of the scalability of Jalangi:
+the instrumentation is too slow:
+
+instrumenting a file that contains over 60k Loc takes at least 5GB memory and over 10 minutes, actually I never finish doing that.
+maybe optimizing the code instrumentation part can be as one of my algorithm class research project.
+
+
+======================================================
+test code checking if dynamically added js code will be instrumented: (copy-paste in web console)
+
+var script = document.createElement('script')
+script.innerHTML = 'function gongliang(){console.log("output");}'
+var head = document.getElementsByTagName('head')[0]
+head.appendChild(script)
+
+
+var script = document.createElement('script')
+script.innerHTML = 'function gongliang(){console.log("output");}'
+var head = document.body
+head.appendChild(script)
+
+
+
+===================================================
+
+possible root cause:
+
+loop {
+	f();
+	function f () {};
+}
+
+
+or 
+
+this statement, does instrumentation handles this expression properly, as this might change its meaning after some wrapping,
+also this means window object in the browser, but global object in node.js
+
+
+
+---------------------------------------------------------------------------------------
+
+J$.F(52157, J$.T(52141, function (e, t, i) {
+    jalangiLabel336:
+        while (true) {
+            try {
+                J$.Fe(51849, arguments.callee, this);
+                J$.N(51853, 'arguments', arguments, true);
+                J$.N(51857, 'e', e, true);
+                J$.N(51861, 't', t, true);
+                J$.N(51865, 'i', i, true);
+                J$.N(51873, 'o', J$.T(51869, o, 12), false);
+                 ...
+                function o(i, o, n) {
+                    jalangiLabel278:
+                        while (true) {
+                            try {
+                                J$.Fe(43373, arguments.callee, this);
+                                J$.N(43377, 'arguments', arguments, true);
+                                J$.N(43381, 'i', i, true);
+                                J$.N(43385, 'o', o, true);
+                                J$.N(43389, 'n', n, true);
+                                J$.N(43393, 'h', h, false);
+                                var h = J$.W(43313, 'h', J$.M(43309, J$.R(43301, 't', t), 'createElement', false)(J$.R(43305, 'i', i)), h);
+                                return J$.Rt(43369, (J$.C(259, J$.R(43317, 'o', o)) ? J$.P(43333, J$.R(43321, 'h', h), 'id', J$.B(3326, '+', J$.R(43325, 'J', J), J$.R(43329, 'o', o))) : J$._(), J$.C(263, J$.R(43337, 'n', n)) ? J$.P(43353, J$.G(43345, J$.R(43341, 'h', h), 'style'), 'cssText', J$.R(43349, 'n', n)) : J$._(), J$.F(43365, J$.R(43357, 'e', e), false)(J$.R(43361, 'h', h))));
+                            } catch (J$e) {
+                                console.log(J$e);
+                                console.log(J$e.stack);
+                                throw J$e;
+                            } finally {
+                                if (J$.Fr(64453))
+                                    continue jalangiLabel278;
+                                else
+                                    return J$.Ra();
+                            }
+                        }
+                }
+            } catch(e) {}
+
+                ...
+
+It seems that so far all the problems encountered is this type of error.
+
+Also I am not sure if J$.M has the similar problem?
+
+reference:
+Firefox doesn’t hoist function declarations in blocks
+http://statichtml.com/2011/spidermonkey-function-hoisting.html
+
+---------------------------------------------------------------------------------------
+
+
+
+
+another issue: ****************************************
+
+every time call replaceInstatement, the esprima.parse and transformAst is called again 
+
+function replaceInStatement(code) {
+        var asts = arguments;
+        var visitorReplaceInExpr = {
+            'Identifier': function(node) {
+                if (node.name.indexOf(RP) === 0) {
+                    var i = parseInt(node.name.substring(RP.length));
+                    return asts[i];
+                } else {
+                    return node;
+                }
+            },
+            'BlockStatement' : function(node) {
+                if (node.body[0].type === 'ExpressionStatement' && isArr(node.body[0].expression)) {
+                    node.body = node.body[0].expression;
+                }
+                return node;
+            }
+        }
+        var ast = esprima.parse(code);
+        var newAst = transformAst(ast, visitorReplaceInExpr, undefined, undefined, true);
+        //console.log(newAst);
+        return newAst.body;
+    }
+
+
+
+---------------------------------------------------------------------------------------
+about tomcat7:
+
+/var/lib/tomcat7/webapps
+sudo service tomcat7 start
+
+
+---------------------------------------------------------------------------------------
+
+
+three most important things:
+1. event handler handled
+2. dom tree mutation handled
+3. partially fixed a bug: function hoister problem.
+
+also need to transplant esnstrument.js into the frontend
+1. wrap with environtment conditional statements like config.js
+2. use function hoister
+
+
+
+
+Javascript: The world's Most Misunderstood Programming Language
+Java's stupid little brother
+
+
+spidermonkey.cpp |=> clang |=> emscripten |=> closure |=> js.js
+
+
+shadow memory is originally proposed in the valgrind paper
+
+JSBench uses record-replay mechanisms to create Javascript benchmarks
+Mugshot captures all events to deterministically replay executions of web applications
+Ripley replicates execution of a client-side Javascript program on a server side replica
+
+
+Koushik's idea:
+likely type checking
+NaN checking
+
+
+
+
+
+lots of exception raised related to CallAsNativeConstructor
+
+[15:22:14.880] "callAsNativeConstructor@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:427
+callAsConstructor@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:446
+invokeFun@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:515
+F/<@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:630
+optimizelyCode</</Fb<@http://cdn.optimizely.com/js/231895955.js:17086
+invokeFun@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:517
+F/<@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:630
+Lb@http://cdn.optimizely.com/js/231895955.js:1256
+invokeFun@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:517
+F/<@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:630
+Jb@http://cdn.optimizely.com/js/231895955.js:1539
+invokeFun@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:517
+F/<@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:630
+J@http://cdn.optimizely.com/js/231895955.js:1176
+invokeFun@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:517
+F/<@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:630
+Rb@http://cdn.optimizely.com/js/231895955.js:1347
+invokeFun@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:517
+M/<@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:644
+optimizelyCode</$</</</f<@http://cdn.optimizely.com/js/231895955.js:11892
+invokeFun@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:517
+M/<@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:644
+optimizelyCode</$</<.handle<@http://cdn.optimizely.com/js/231895955.js:11031
+invokeFun@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:517
+M/<@https://raw.github.com/JacksonGL/Jalangi_ref/master/analysis.js:644
+optimizelyCode</$</<.add</i<@http://cdn.optimizely.com/js/231895955.js:10748"
+
+
+
+=========================================================================================
+support front end object wrapping to fully support shadown execution
+
+how to distinguish external functions and instrumented functions? how did cindy and cuong address this issue in their llvm system?
+
+=========================================================================================
+so many tests, apply jalangi to them:
+
+Web Testing, Example Test cases
+
+Posted In | Software Testing Templates, Testing Tips and resources, Web Testing
+
+WEB TESTING
+While testing a web application you need to consider following Cases:
+
+• Functionality Testing
+• Performance Testing
+• Usability Testing
+• Server Side Interface
+• Client Side Compatibility
+• Security
+
+Functionality:
+In testing the functionality of the web sites the following should be tested:
+• Links
+i. Internal Links
+ii. External Links
+iii. Mail Links
+iv. Broken Links
+
+• Forms
+i. Field validation
+ii. Error message for wrong input
+iii. Optional and Mandatory fields
+
+• Database
+* Testing will be done on the database integrity.
+
+• Cookies
+* Testing will be done on the client system side, on the temporary Internet files.
+
+Performance :
+Performance testing can be applied to understand the web site’s scalability, or to benchmark the performance in the environment of third party products such as servers and middleware for potential purchase.
+
+• Connection Speed:
+Tested over various networks like Dial Up, ISDN etc
+• Load:
+i. What is the no. of users per time?
+ii. Check for peak loads and how system behaves
+iii. Large amount of data accessed by user
+• Stress:
+i. Continuous Load
+ii. Performance of memory, CPU, file handling etc..
+
+Usability:
+Usability testing is the process by which the human-computer interaction characteristics of a system are measured, and weaknesses are identified for correction.
+• Ease of learning
+• Navigation
+• Subjective user satisfaction
+• General appearance
+
+Server Side Interface:
+In web testing the server side interface should be tested. This is done by verify that communication is done properly. Compatibility of server with software, hardware, network and database should be tested.
+
+Client Side Compatibility:
+The client side compatibility is also tested in various platforms, using various browsers etc.

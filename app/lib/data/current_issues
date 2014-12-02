@@ -1,0 +1,2 @@
+1. something wrong when fetching the js code from github website:
+there are only two external files, but somehow FF addon can find 4, and one of them is not javascript code snippet
